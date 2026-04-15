@@ -24,6 +24,14 @@ struct MAACopilot: Codable, Equatable {
     struct Operator: Codable, Equatable {
         let name: String
         let skill: Int?
+        let requirements: Requirements?
+
+        struct Requirements: Codable, Equatable {
+            let elite: Int?
+            let level: Int?
+            let skill_level: Int?
+            let module: Int?
+        }
     }
 
     struct Group: Codable, Equatable {
@@ -41,11 +49,24 @@ struct MAACopilot: Codable, Equatable {
 
 extension MAACopilot.Operator: CustomStringConvertible {
     var description: String {
+        var segments: [String] = [name]
+
         if let skill {
-            return "\(name) \(skill)"
-        } else {
-            return name
+            segments.append("技能 \(skill)")
         }
+
+        if let requirements {
+            if let module = requirements.module, module >= 0 {
+                let moduleSymbol = ["", "χ", "γ", "α", "Δ"]
+                if module == 0 {
+                    segments.append("[无模组]")
+                } else if module < moduleSymbol.count {
+                    segments.append("[模组 \(moduleSymbol[module])]")
+                }
+            }
+        }
+
+        return segments.joined(separator: " ")
     }
 }
 
